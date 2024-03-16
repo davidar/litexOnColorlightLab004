@@ -1,7 +1,7 @@
 # litexOnColorlightLab004
 
 Demonstration on using a Soft Core (**VexRiscv**)
-built with **LiTex** in a **Colorlight 5A-75B** or **Colorlight I5** (ECP5).
+built with **LiteX** in a **Colorlight 5A-75B** or **Colorlight i5/i9** (ECP5).
 This demo is based on
 [lab004][lab004] of [fpga_101][fpga_101] repository.
 
@@ -67,12 +67,16 @@ or
 ```bash
 ./base.py --version i5 --build
 ```
+or
+```bash
+./base.py --version i9 --revision 7.2 --build
+```
 ### firmware
 ```bash
 cd firmware && make [VERSION=5a_75b]
 ```
 
-where `VERSION` may be **5a_75b** or **i5**
+where `VERSION` may be **5a_75b** or **i5** (use `VERSION=i5` for both i5 and i9).
 
 see [lab004] for more details.
 
@@ -81,14 +85,14 @@ see [lab004] for more details.
 ./base.py --version 5A-75B --load [--cable yourCable] # change 5A-75B by I5
 ```
 where *yourCable* depends on your JTAG probe. If `--cable` is not provided
-*openFPGALoader* will uses `ft2232` generic interface. Not required for I5.
+*openFPGALoader* will uses `ft2232` generic interface. Not required for i5/i9.
 
 ## load firmware
 ```bash
 litex_term /dev/ttyYYYX --kernel firmware/firmware.bin
 ```
 where *ttyYYYX* is your USB <-> UART converter device (usually ttyUSB0 (5A-75B)
-or ttyACM0 (I5)).
+or ttyACM0 (i5/i9)).
 
 ## boot
 ```bash

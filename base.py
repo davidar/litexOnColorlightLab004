@@ -69,17 +69,18 @@ class BaseSoC(SoCCore):
 # Build --------------------------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="LiteX SoC on Colorlight 5A-75B")
+    parser = argparse.ArgumentParser(description="LiteX SoC on Colorlight")
     builder_args(parser)
     soc_core_args(parser)
     trellis_args(parser)
     parser.add_argument("--build", action="store_true", help="Build bitstream")
     parser.add_argument("--load",  action="store_true", help="Load bitstream")
     parser.add_argument("--cable", default="ft2232",    help="JTAG probe model")
-    parser.add_argument("--version", default="5A-75B",  help="colorlight model (5A-75B / i5)")
+    parser.add_argument("--version", default="5A-75B",  help="colorlight model (5A-75B / i5 / i9)")
+    parser.add_argument("--revision", default="7.0",    help="colorlight revision (7.0 / 7.2)")
     args = parser.parse_args()
 
-    soc = BaseSoC(args.version, revision="7.0")
+    soc = BaseSoC(args.version, args.revision)
 
     builder = Builder(soc, **builder_argdict(args))
     builder.build(**trellis_argdict(args), run=args.build)
@@ -91,7 +92,7 @@ def main():
             os.system("openFPGALoader " + "-b colorlight -c " +  args.cable +
                 " " + bitstream_file)
         else:
-            programmer = OpenFPGALoader("colorlight-i5")
+            programmer = OpenFPGALoader("colorlight-" + args.version)
             programmer.load_bitstream(bitstream_file)
 
 if __name__ == "__main__":
