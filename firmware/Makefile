@@ -1,4 +1,4 @@
-VERSION ?= 5a_7b
+VERSION ?= i5
 BUILD_DIR=../build/colorlight_$(VERSION)
 
 include $(BUILD_DIR)/software/include/generated/variables.mak

@@ -1,111 +1,38 @@
 # litexOnColorlightLab004
 
 Demonstration on using a Soft Core (**VexRiscv**)
-built with **LiteX** in a **Colorlight 5A-75B** or **Colorlight i5/i9** (ECP5).
-This demo is based on
-[lab004][lab004] of [fpga_101][fpga_101] repository.
-
-- push button is used as reset
-- led is used for *led* demo in firmware
-
-## Colorlight 5A-75B
-
-UART use (arbitrary) J1 pins 1 & 2
-
-| name      | Pin | note        |
-|-----------|-----|-------------|
-| clk25     | P6  | 25MHz clock |
-| cpu_reset | P11 | button J28  |
-| user_led  | P11 | button J28  |
-| Uart TX   | F3  | J1.1        |
-| Uart RX   | F1  | J1.2        |
-
-## Colorlight I5
-
-UART is directly available through CMSIS-DAP ACM interface
-
-| name        | Pin | note        |
-|-------------|-----|-------------|
-| clk25       | P3  | 25MHz clock |
-| cpu_reset_n | K18 | button J28  |
-| user_led    | U16 | button J28  |
-| Uart TX     | J17 | CMSIS-DAP   |
-| Uart RX     | H18 | CMSIS-DAP   |
+built with **LiteX** on a **Colorlight i5/i9** (ECP5).
 
 ## Prerequisite
 
 ### software
 
-- [openFPGALoader][openFPGALoader]
-- [LiteX and Migen tools]() (see [fpga_101][fpga_101] README for install
-  everything).
-- yosys, nextpnr and prjtrellis
+- [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build)
+- [LiteX](https://github.com/enjoy-digital/litex)
+- remember to [setup udev rules](https://github.com/adamgreig/ecpdap/tree/master/drivers)
 
-### hardware (Colorlight 5A-75B only)
-
-- **ColorLight 5A-75B** has no on-board JTAG adapter, so user must solder a pinheader
-  (**J27** for JTAG signals, **J33** for VCC and **J34** for GND) and connect an external probe (see.
-  [chubby75](https://github.com/q3k/chubby75/tree/master/5a-75b));
-- level shifter *74HC245T* are used between FPGA and Jx connectors. To be able
-  to use corresponding pins in bidirectional mode and in 3.3V instead 5V, buffer
-  must be desoldered, and replace or just bypass. To have, a partial, access to
-  J1, buffer U28 must be dropped (see next figure);
-- an USB <-> serial converter must be used to have access to serial interface
-
-![JX direct connection](http://kmf2.trabucayre.com/colorLight5A-75b.jpg)
-
-**U28 without buffer and with direct connection between input and output.**
+If using WSL2:
+- [usbipd](https://github.com/dorssel/usbipd-win)
+- [kernel with `CONFIG_USB_HIDDEV` enabled](https://github.com/microsoft/WSL2-Linux-Kernel/releases/tag/linux-msft-wsl-5.15.150.1)
 
 ## Build
 
 ### gateware
-Just:
-```bash
-./base.py --version 5A-75B --build
+
+```sh
+python3 -m litex_boards.targets.colorlight_i5 --board i9 --revision 7.2 --cpu-type vexriscv --build --load --ecppack-compress
 ```
-or
-```bash
-./base.py --version i5 --build
-```
-or
-```bash
-./base.py --version i9 --revision 7.2 --build
-```
+
 ### firmware
-```bash
-cd firmware && make [VERSION=5a_75b]
+
+```sh
+make -C firmware
 ```
-
-where `VERSION` may be **5a_75b** or **i5** (use `VERSION=i5` for both i5 and i9).
-
-see [lab004] for more details.
-
-## load bitstream
-```bash
-./base.py --version 5A-75B --load [--cable yourCable] # change 5A-75B by I5
-```
-where *yourCable* depends on your JTAG probe. If `--cable` is not provided
-*openFPGALoader* will uses `ft2232` generic interface. Not required for i5/i9.
 
 ## load firmware
-```bash
-litex_term /dev/ttyYYYX --kernel firmware/firmware.bin
-```
-where *ttyYYYX* is your USB <-> UART converter device (usually ttyUSB0 (5A-75B)
-or ttyACM0 (i5/i9)).
 
-## boot
-```bash
-serialboot
+```sh
+litex_term --kernel firmware/firmware.bin /dev/ttyACM0
 ```
 
-## test
-To start the blink led use command
-```bash
-led
-```
-
-
-[fpga_101]: https://github.com/litex-hub/fpga_101
-[lab004]: https://github.com/litex-hub/fpga_101/tree/master/lab004
-[openFPGALoader]: https://github.com/trabucayre/openFPGALoader
+If you started the terminal too late to see the LiteX BIOS, type `reboot` to restart the CPU.
